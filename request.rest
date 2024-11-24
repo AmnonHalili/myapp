@@ -5,13 +5,23 @@ GET http://localhost:3000/
 ### 
 
 
-GET http://localhost:3000/posts
+GET http://localhost:3000/posts?owner=Amnon2
 
 
 ###
 
-POST  http://localhost:3000/posts
+GET  http://localhost:3000/posts
 
+###
+
+POST  http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "owner": "Amnon2",
+    "title": "Post 2",
+    "content": "Content 1"
+}
 ### 
 
-DELETE http://localhost:3000/posts
+DELETE http://localhost:3000/posts/1
