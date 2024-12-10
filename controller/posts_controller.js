@@ -29,10 +29,15 @@ const createPost = async (req, res) => {
 
 
     const deletePost = async (req, res) => {
-      const postId = req.params.id; // מקבל את מזהה הפוסט מהפרמטרים של הבקשה
+      const postId = req.params.id;
+  
+      // בדיקת תקינות של ObjectId
+      if (!mongoose.Types.ObjectId.isValid(postId)) {
+          return res.status(400).send({ message: "Invalid Post ID" });
+      }
   
       try {
-          // מחפש ומוחק את הפוסט על פי מזהה
+          // מחיקת הפוסט על פי מזהה
           const deletedPost = await PostModel.findByIdAndDelete(postId);
   
           if (deletedPost) {
@@ -41,30 +46,33 @@ const createPost = async (req, res) => {
               res.status(404).send({ message: "Post not found" });
           }
       } catch (error) {
-          // מחזיר שגיאה אם התהליך נכשל
-          res.status(400).send({ error: error.message });
+          console.error("Error deleting post:", error);  // הדפסת שגיאה לקונסול
+          res.status(500).send({ message: "Error deleting post", error: error.message });
       }
   };
   
   const getPostById = async (req, res) => {
-    const postId = req.params.id; // מזהה הפוסט מתוך הפרמטרים של הבקשה
+    const postId = req.params.id;
+
+    // בדיקת תקינות של ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+        return res.status(400).send({ message: "Invalid Post ID" });
+    }
 
     try {
-        // חיפוש הפוסט לפי מזהה
-        const post = await PostModel.findById(mongoose.Types.ObjectId(postId));
+        const post = await PostModel.findById(postId);
+
         if (post) {
-            // אם נמצא, מחזירים אותו
             res.status(200).send(post);
         } else {
-            // אם לא נמצא, מחזירים הודעת 404
             res.status(404).send({ message: "Post not found" });
         }
     } catch (error) {
-        // במקרה של שגיאה, מחזירים הודעת 400 עם פרטי השגיאה
-        res.status(400).send({ error: error.message });
+        console.error("Error fetching post:", error); 
+        res.status(500).send({ message: "Error fetching post", error: error.message });
     }
-    return res.send(400).send(error.message);
 };
+
 
 module.exports = {
     getAllPosts,
